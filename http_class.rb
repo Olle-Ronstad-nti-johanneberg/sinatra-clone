@@ -7,7 +7,7 @@ class Http_request
         tmp = {}
         text.split("\n")[1..-1].each do |row|
             key, val = row.split(": ")
-            tmp[key.gsub("-","_").to_sym] = val
+            tmp[key] = val
         end
         @data = tmp
     end
@@ -25,7 +25,7 @@ end
 
 class Http_response
 
-    attr_accessor :content_type,:body,:header
+    attr_accessor :body
     def initialize(body,status_code = 200)
         @protocol = "HTTP/1.1"
 
@@ -40,14 +40,12 @@ class Http_response
         if @status_code.nil?
             raise "invalid status code :#{status_code}"
         end
-            
-        @server = "olle_server"
 
         @body = body
-
-        @content_type = "text/html; charset=utf-8"
-
-        @header =[]
+        @header = {
+            "Content-Type" => "text/html; charset=utf-8",
+            "Server" => "olle_server"
+        }
     end
 
     def status_code(status_code)
@@ -57,10 +55,26 @@ class Http_response
         end
     end
 
-
-
     def to_s
-        "#{@protocol} #{@status_code}\r\nServer: #{@server}\r\nContent-Type: #{@content_type}\n\n#{@body}\n\n"
+        "#{@protocol} #{@status_code}\r\n#{
+            @header.to_a.map do |key,value|
+                key + ": " + value
+            end.join("\r\n")
+
+        }\n\n#{@body}\n\n"
+    end
+
+    def redirect(link)
+        @status_code = @@status_codes[301]
+        @header["Location"] = link
+    end
+
+    def content_type=(type)
+        @header["Content-Type"] = type
+    end
+
+    def header
+        @header
     end
 
 end
