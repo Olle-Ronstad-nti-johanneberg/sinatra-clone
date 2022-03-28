@@ -1,8 +1,9 @@
 require 'socket'
 require 'slim'
 require_relative 'colorize.rb'
+require_relative 'http_class.rb'
 
-def slim(file_name)
+def slim(file_name,layout=true)
     layout = File.open("views/layout.slim", "rb").read
     contents = File.open("views/#{file_name}.slim", "rb").read
 
@@ -35,18 +36,20 @@ class Olle_server
     def start()
         puts "\nStarted server\n".green
         loop do
-            session = @server.accept
-            puts "\n\nThe socket is: "+ session.to_s.yellow
-            request = ""
-            while (line = session.gets) and line !~ /^\s*$/
-                request += line
-            end
-            request = parse_http(request)
-            puts_request(request)
+            socket = @server.accept
+            #Thread.new do 
+                puts "\n\nThe socket is: "+ socket.to_s.yellow
+                request = ""
+                while (line = socket.gets) and line !~ /^\s*$/
+                    request += line
+                end
+                request = Http_request.new(request)
+                request.print
 
-            send_response(session,request)
-            puts "Closing socket: " + session.to_s.yellow
-            session.close
+                send_response(socket,request)
+                puts "Closing socket: " + socket.to_s.yellow
+                socket.close
+            #end
         end
         
     end
@@ -54,48 +57,30 @@ class Olle_server
     private
 
     #puts the hash wich contains the data to the terminal with colors
-    def puts_request(request)
-        request.each do |key,value|
-            puts key.to_s.blue + " => " + value.red
-        end
-    end
-        
-    #parse a http requst to an hash
-    def parse_http(text)
-        out = {}
-        out[:type] = text.split(" ")[0]
-        out[:path] = text.split(" ")[1]
-        out[:protocol] = text.split(" ")[2]
-        text.split("\n")[1..-1].each do |row|
-            key, val = row.split(": ")
-            out[key.gsub("-","_").to_sym] = val
-        end
-        out
-    end
-    
-    def gen_http_response(body)
-        response = "HTTP/1.1 200 OK\nServer: Olle_server\n\n#{body}\n\n"
-    end
     
     def send_response(socket, request)
-        case request[:type]
+        case request.type
         when "GET"
-            if @get_routes[request[:path]] != nil
-                socket.puts(
-                    gen_http_response(
-                        @get_routes[request[:path]].call(request)
-                        )
-                    )
+            if @get_routes[request.path] != nil
+                body = @get_routes[request.path].call(request)
+                response = Http_response.new(body)
+                puts response.to_s
+                socket.puts response.to_s
+            elsif Dir["public/*"].include?("public"+request.path)
+                response = Http_response.new(File.read("public#{request.path}"))
+                if request.path.split(".")[-1].upcase == "CSS"
+                    response.content_type = "text/css; charset=utf-8"
+                end
+                socket.puts response.to_s
             else
-                socket.puts("HTTP/1.1 404\nServer: Olle_server")
+                response = Http_response.new("error",404)
+                socket.puts response.to_s
             end
         when "POST"
-            if @post_routes[request[:path]] != nil
-                socket.puts(
-                    gen_http_response(
-                        @post_routes[request[:path]].call(request)
-                        )
-                    )
+            if @post_routes[request.path] != nil
+                body = @get_routes[request[:path]].call(request)
+                response = Http_response.new(body)
+                socket.puts response.to_s
             else
                 socket.puts("HTTP/1.1 404\nServer: Olle_server")
             end
