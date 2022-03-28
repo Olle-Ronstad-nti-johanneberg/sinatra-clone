@@ -25,7 +25,7 @@ end
 
 class Http_response
 
-    attr_accessor :content_type
+    attr_accessor :content_type,:body,:header
     def initialize(body,status_code = 200)
         @protocol = "HTTP/1.1"
 
@@ -46,6 +46,8 @@ class Http_response
         @body = body
 
         @content_type = "text/html; charset=utf-8"
+
+        @header =[]
     end
 
     def status_code(status_code)

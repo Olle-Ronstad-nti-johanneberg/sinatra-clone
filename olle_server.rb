@@ -62,9 +62,8 @@ class Olle_server
         case request.type
         when "GET"
             if @get_routes[request.path] != nil
-                body = @get_routes[request.path].call(request)
-                response = Http_response.new(body)
-                puts response.to_s
+                response = Http_response.new("Olle server: ")
+                @get_routes[request.path].call(response,request)
                 socket.puts response.to_s
             elsif Dir["public/*"].include?("public"+request.path)
                 response = Http_response.new(File.read("public#{request.path}"))
@@ -78,11 +77,12 @@ class Olle_server
             end
         when "POST"
             if @post_routes[request.path] != nil
-                body = @get_routes[request[:path]].call(request)
-                response = Http_response.new(body)
+                response = Http_response.new("Olle server: ")
+                @get_routes[request.path].call(response,request)
                 socket.puts response.to_s
             else
-                socket.puts("HTTP/1.1 404\nServer: Olle_server")
+                response = Http_response.new("error",404)
+                socket.puts response.to_s
             end
         else
             socket.puts("HTTP/1.1 500\nServer: Olle_server")
