@@ -64,24 +64,29 @@ class Olle_server
             if @get_routes[request.path] != nil
                 response = Http_response.new("Olle server: ")
                 @get_routes[request.path].call(response,request)
+                response.print
                 socket.puts response.to_s
             elsif Dir["public/*"].include?("public"+request.path)
                 response = Http_response.new(File.read("public#{request.path}"))
                 if request.path.split(".")[-1].upcase == "CSS"
                     response.content_type = "text/css; charset=utf-8"
                 end
+                response.print
                 socket.puts response.to_s
             else
                 response = Http_response.new("error",404)
+                response.print
                 socket.puts response.to_s
             end
         when "POST"
             if @post_routes[request.path] != nil
                 response = Http_response.new("Olle server: ")
                 @get_routes[request.path].call(response,request)
+                response.print
                 socket.puts response.to_s
             else
                 response = Http_response.new("error",404)
+                response.print
                 socket.puts response.to_s
             end
         else

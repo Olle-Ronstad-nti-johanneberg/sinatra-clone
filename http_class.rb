@@ -13,12 +13,12 @@ class Http_request
     end
 
     def print()
-        puts @protocol.red
-        puts @type.red
-        puts @path.red
+        puts @protocol.light_blue
+        puts @type.light_blue
+        puts @path.light_blue
 
         @data.each do |key,value|
-            puts "#{key}: #{value}".yellow
+            puts "#{key}: #{value}".light_blue
         end
     end
 end
@@ -77,4 +77,7 @@ class Http_response
         @header
     end
 
+    def print()
+        puts self.to_s.green
+    end
 end
