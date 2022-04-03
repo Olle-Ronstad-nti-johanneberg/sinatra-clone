@@ -2,6 +2,7 @@ require 'socket'
 require 'slim'
 require_relative 'colorize.rb'
 require_relative 'http_class.rb'
+require_relative 'adv_gets.rb'
 
 def slim(file_name,layout=true)
     layout = File.open("views/layout.slim", "rb").read
@@ -38,16 +39,18 @@ class Olle_server
         puts "\nStarted server\n".green
         loop do
             socket = @server.accept
+            system("cls")
             #Thread.new do 
                 puts "\n\nThe socket is: "+ socket.to_s.yellow
-                request = ""
-                while (line = socket.gets) and line !~ /^\s*$/
-                    request += line
-                end
-                request = Http_request.new(request)
-                request.print
+                request = adv_gets(socket)
+                if request != ""
+                    request = Http_request.new(request)
+                    request.print
 
-                send_response(socket,request)
+                    send_response(socket,request)
+                else 
+                    puts "EMPTY REQUEST".red
+                end
                 puts "Closing socket: " + socket.to_s.yellow
                 socket.close
             #end
