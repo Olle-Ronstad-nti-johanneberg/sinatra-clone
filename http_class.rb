@@ -1,6 +1,11 @@
+require 'securerandom'
+
+
 class Http_request
-    attr_reader :type,:path,:protocol,:data
+    attr_reader :type,:path,:protocol,:headers,:cookie
     def initialize(text)
+
+
         @type = text.split(" ")[0]
         @path = text.split(" ")[1]
         @protocol = text.split(" ")[2]
@@ -9,7 +14,18 @@ class Http_request
             key, val = row.split(": ")
             tmp[key] = val
         end
-        @data = tmp
+        @headers = tmp
+
+        tmp = {}
+
+        if !@headers["Cookie"].nil?
+            @headers["Cookie"].split("; ").each do |cookie|
+                key, val = cookie.split("=")
+                tmp[key] = val
+            end
+        end
+        @cookie = tmp
+
     end
 
     def print()
@@ -17,7 +33,7 @@ class Http_request
         puts @type.light_blue
         puts @path.light_blue
 
-        @data.each do |key,value|
+        @headers.each do |key,value|
             puts "#{key}: #{value}".light_blue
         end
     end
@@ -75,6 +91,10 @@ class Http_response
 
     def header
         @header
+    end
+
+    def set_cookie(name,value)
+        @header["Set-Cookie"] = "#{name}=#{value}"
     end
 
     def print()
