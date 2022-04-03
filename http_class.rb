@@ -4,19 +4,25 @@ require 'securerandom'
 class Http_request
     attr_reader :type,:path,:protocol,:headers,:cookie,:params
     def initialize(text)
-
+        puts text.red
 
         @type = text.split(" ")[0]
-        @path = text.split(" ")[1]
+        @path = text.split(" ")[1].split("?")[0]
         @protocol = text.split(" ")[2]
 
         text = text.split("\n")
-        body = text.pop
-
+        if @type == "POST"
+            body = text.pop
+        elsif @type == "GET"
+            p body = text[0].split(" ")[1].split("?")[1]
+        end
         tmp = {}
-        body.split("&").each do |row|
-            key, val = row.split("=")
-            tmp[key] = val
+
+        if !body.nil?
+            body.split("&").each do |row|
+                key, val = row.split("=")
+                tmp[key] = val
+            end
         end
         @params = tmp
 
@@ -48,6 +54,10 @@ class Http_request
 
         @headers.each do |key,value|
             puts "#{key}: #{value}".light_blue
+        end
+        puts ""
+        @params.each do |key,value|
+            puts "#{key} = #{value}".light_blue
         end
     end
 end
