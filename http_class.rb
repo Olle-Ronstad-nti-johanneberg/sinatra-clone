@@ -2,15 +2,28 @@ require 'securerandom'
 
 
 class Http_request
-    attr_reader :type,:path,:protocol,:headers,:cookie
+    attr_reader :type,:path,:protocol,:headers,:cookie,:params
     def initialize(text)
 
 
         @type = text.split(" ")[0]
         @path = text.split(" ")[1]
         @protocol = text.split(" ")[2]
+
+        text = text.split("\n")
+        body = text.pop
+
         tmp = {}
-        text.split("\n")[1..-1].each do |row|
+        body.split("&").each do |row|
+            key, val = row.split("=")
+            tmp[key] = val
+        end
+        @params = tmp
+
+
+
+        tmp = {}
+        text[1..-1].each do |row|
             key, val = row.split(": ")
             tmp[key] = val
         end
