@@ -64,7 +64,7 @@ end
 
 class Http_response
 
-    attr_accessor :body
+    attr_accessor :body, :cookies
     def initialize(body,status_code = 200)
         @protocol = "HTTP/1.1"
 
@@ -85,6 +85,8 @@ class Http_response
             "Content-Type" => "text/html; charset=utf-8",
             "Server" => "olle_server"
         }
+
+        @cookies = {}
     end
 
     def status_code(status_code)
@@ -96,8 +98,13 @@ class Http_response
 
     def to_s
         "#{@protocol} #{@status_code}\r\n#{
+
             @header.to_a.map do |key,value|
                 key + ": " + value
+            end.join("\r\n")}\r\n#{
+
+            @cookies.to_a.map do |key,value|
+                "Set-Cookie: " + key + "=" + value
             end.join("\r\n")
 
         }\n\n#{@body}\n\n"
@@ -114,10 +121,6 @@ class Http_response
 
     def header
         @header
-    end
-
-    def set_cookie(name,value)
-        @header["Set-Cookie"] = "#{name}=#{value}"
     end
 
     def print()
