@@ -87,7 +87,7 @@ class Olle_server
         when "POST"
             if @post_routes[request.path] != nil
                 response = Http_response.new("Olle server: ")
-                @get_routes[request.path].call(response,request)
+                @post_routes[request.path].call(response,request)
                 response.print
                 socket.puts response.to_s
             else
