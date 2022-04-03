@@ -4,12 +4,12 @@ require_relative 'colorize.rb'
 require_relative 'http_class.rb'
 require_relative 'adv_gets.rb'
 
-def slim(file_name,layout=true)
+def slim(file_name,layout:true,locals:{})
     layout = File.open("views/layout.slim", "rb").read
     contents = File.open("views/#{file_name}.slim", "rb").read
 
     l = Slim::Template.new{layout}
-    c = Slim::Template.new{contents}.render()
+    c = Slim::Template.new{contents}.render(nil,locals)
     l.render{c}
 end
 
@@ -39,7 +39,7 @@ class Olle_server
         puts "\nStarted server\n".green
         loop do
             socket = @server.accept
-            system("cls")
+            
             #Thread.new do 
                 puts "\n\nThe socket is: "+ socket.to_s.yellow
                 request = adv_gets(socket)
