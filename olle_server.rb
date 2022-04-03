@@ -18,7 +18,8 @@ class Olle_server
     
     #initilazes the Olle_server object by creating a TCP server with the specified port
     def initialize(port)
-        @server = TCPServer.new(port)
+        @@img_types = ["apng","avif","gif","jpeg","jpg","jfif","pjpeg","pjp","png","svg","webp","bmp","ico","cur","tif","tiff"]
+        @server = TCPServer.new("0.0.0.0",port)
         @get_routes = {}
         @post_routes = {}
     end
@@ -68,8 +69,10 @@ class Olle_server
                 socket.puts response.to_s
             elsif Dir["public/*"].include?("public"+request.path)
                 response = Http_response.new(File.read("public#{request.path}"))
-                if request.path.split(".")[-1].upcase == "CSS"
+                if request.path.split(".")[-1].downcase == "css"
                     response.content_type = "text/css; charset=utf-8"
+                elsif @@img_types.include?(request.path.split(".")[-1].downcase)
+                    response = HTTP_response_image.new(request.path)
                 end
                 response.print
                 socket.puts response.to_s
