@@ -4,7 +4,6 @@ require 'securerandom'
 class Http_request
     attr_reader :type,:path,:protocol,:headers,:cookie,:params
     def initialize(text)
-        puts text.red
 
         @type = text.split(" ")[0]
         @path = text.split(" ")[1].split("?")[0]
@@ -14,7 +13,7 @@ class Http_request
         if @type == "POST"
             body = text.pop
         elsif @type == "GET"
-            p body = text[0].split(" ")[1].split("?")[1]
+            body = text[0].split(" ")[1].split("?")[1]
         end
         tmp = {}
 
