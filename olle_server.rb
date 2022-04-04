@@ -2,7 +2,7 @@ require 'socket'
 require 'slim'
 require_relative 'colorize.rb'
 require_relative 'http_class.rb'
-require_relative 'adv_gets.rb'
+require_relative 'TCPSocket.rb'
 
 def slim(file_name,layout:true,locals:{})
     layout = File.open("views/layout.slim", "rb").read
@@ -39,10 +39,10 @@ class Olle_server
         puts "\nStarted server\n".green
         loop do
             socket = @server.accept
-            
+
             #Thread.new do 
                 puts "\n\nThe socket is: "+ socket.to_s.yellow
-                request, body = adv_gets(socket)
+                request, body = socket.get_http
                 request = Http_request.new(request,body)
                 request.print
                 send_response(socket,request)
