@@ -3,17 +3,15 @@ require 'securerandom'
 
 class Http_request
     attr_reader :type,:path,:protocol,:headers,:cookie,:params
-    def initialize(text)
+    def initialize(headers,body)
 
-        @type = text.split(" ")[0]
-        @path = text.split(" ")[1].split("?")[0]
-        @protocol = text.split(" ")[2]
+        @type = headers.split(" ")[0]
+        @path = headers.split(" ")[1].split("?")[0]
+        @protocol = headers.split(" ")[2]
 
-        text = text.split("\n")
-        if @type == "POST"
-            body = text.pop
-        elsif @type == "GET"
-            body = text[0].split(" ")[1].split("?")[1]
+        headers = headers.split("\n")
+        if @type == "GET"
+            body = headers[0].split(" ")[1].split("?")[1]
         end
         tmp = {}
 
@@ -28,7 +26,7 @@ class Http_request
 
 
         tmp = {}
-        text[1..-1].each do |row|
+        headers[1..-1].each do |row|
             key, val = row.split(": ")
             tmp[key] = val
         end
@@ -82,7 +80,8 @@ class Http_response
         @body = body
         @header = {
             "Content-Type" => "text/html; charset=utf-8",
-            "Server" => "olle_server"
+            "Server" => "olle_server",
+            "Content-Length" => "0"
         }
 
         @cookies = {}
@@ -96,6 +95,7 @@ class Http_response
     end
 
     def to_s
+        @header["Content-Length"] = @body.bytesize.to_s
         "#{@protocol} #{@status_code}\r\n#{
 
             @header.to_a.map do |key,value|
@@ -106,7 +106,7 @@ class Http_response
                 "Set-Cookie: " + key + "=" + value
             end.join("\r\n")
 
-        }\n\n#{@body}\n\n"
+        }\n#{@body}"
     end
 
     def redirect(link)
@@ -141,6 +141,7 @@ class HTTP_response_image
     end
 
     def to_s
+        @header["Content-Length"] = @body.bytesize.to_s
         "#{@protocol} #{@status_code}\r\n#{
             @header.to_a.map do |key,value|
                 key + ": " + value
@@ -150,6 +151,7 @@ class HTTP_response_image
     end
 
     def print
+        @header["Content-Length"] = @body.bytesize.to_s
         puts "#{@protocol} #{@status_code}\r\n#{
             @header.to_a.map do |key,value|
                 key + ": " + value
