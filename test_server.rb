@@ -3,7 +3,7 @@ require_relative 'olle_server.rb'
 server = Olle_server.new(42069)
 
 server.GET '/hek' do |response,req|
-    response.body = "<!DOCTYPE html>
+    response.body = "\n<!DOCTYPE html>
     <html lang=\"en\">
     <head>
         <meta charset=\"UTF-8\">
