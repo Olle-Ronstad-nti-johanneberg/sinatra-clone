@@ -42,15 +42,10 @@ class Olle_server
             
             #Thread.new do 
                 puts "\n\nThe socket is: "+ socket.to_s.yellow
-                request = adv_gets(socket)
-                if request != ""
-                    request = Http_request.new(request)
-                    request.print
-
-                    send_response(socket,request)
-                else 
-                    puts "EMPTY REQUEST".red
-                end
+                request, body = adv_gets(socket)
+                request = Http_request.new(request,body)
+                request.print
+                send_response(socket,request)
                 puts "Closing socket: " + socket.to_s.yellow
                 socket.close
             #end
