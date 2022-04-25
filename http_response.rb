@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class HTTPResponse
   attr_reader :header
   attr_accessor :body, :cookies
