@@ -66,7 +66,7 @@ class Olle_server
         response = HTTPResponse.new(File.read("public#{request.path}"))
         if request.path.split('.')[-1].downcase == 'css'
           response.content_type = 'text/css; charset=utf-8'
-        elsif @@img_types.include?(request.path.split('.')[-1].downcase)
+        elsif @img_types.include?(request.path.split('.')[-1].downcase)
           response = HTTPResponseImage.new(request.path)
         end
       else
