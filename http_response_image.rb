@@ -1,4 +1,6 @@
-class HTTP_response_image
+# frozen_string_literal: true
+
+class HTTPResponseImage
   def initialize(file)
     @protocol = 'HTTP/1.1'
     @status_code = '200 OK'
@@ -11,21 +13,20 @@ class HTTP_response_image
 
   def to_s
     @header['Content-Length'] = @body.bytesize.to_s
-    "#{@protocol} #{@status_code}\r\n#{
-            @header.to_a.map do |key, value|
-              key + ': ' + value
-            end.join("\r\n")
 
-          }\n\n#{@body}\n\n"
+    header_str = @header.to_a.map do |key, value|
+      "#{key}: #{value}"
+    end.join("\r\n")
+    "#{@protocol} #{@status_code}\r\n#{header_str}\n\n#{@body}\n\n"
   end
 
   def print
     @header['Content-Length'] = @body.bytesize.to_s
-    puts "#{@protocol} #{@status_code}\r\n#{
-            @header.to_a.map do |key, value|
-              key + ': ' + value
-            end.join("\r\n")
 
-          }\n\nimage".green
+    header_str = @header.to_a.map do |key, value|
+      "#{key}: #{value}"
+    end.join("\r\n")
+
+    puts "#{@protocol} #{@status_code}\r\n#{header_str}\n\nimage".green
   end
 end
