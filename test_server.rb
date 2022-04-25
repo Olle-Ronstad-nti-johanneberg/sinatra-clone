@@ -2,7 +2,7 @@ require_relative 'olle_server'
 
 server = Olle_server.new(42_069)
 
-server.GET '/hek' do |response, req|
+server.get '/hek' do |response, req|
   response.body = "\n<!DOCTYPE html>
     <html lang=\"en\">
     <head>
@@ -22,11 +22,11 @@ server.GET '/hek' do |response, req|
   response.cookies['rand'] = rand.to_s
 end
 
-server.POST '/post' do |res, req|
+server.post '/post' do |res, req|
   res.body = "dina params är #{req.params}"
 end
 
-server.GET '/' do |res|
+server.get '/' do |res|
   res.body = slim('out', locals: { key: 'hej' })
 end
 
