@@ -1,9 +1,9 @@
-require_relative 'olle_server.rb'
+require_relative 'olle_server'
 
-server = Olle_server.new(42069)
+server = Olle_server.new(42_069)
 
-server.GET '/hek' do |response,req|
-    response.body = "\n<!DOCTYPE html>
+server.GET '/hek' do |response, req|
+  response.body = "\n<!DOCTYPE html>
     <html lang=\"en\">
     <head>
         <meta charset=\"UTF-8\">
@@ -18,17 +18,16 @@ server.GET '/hek' do |response,req|
         </form>
     </body>
     </html>"
-    response.cookies["time"] = Time.new().to_s
-    response.cookies["rand"] = rand.to_s
+  response.cookies['time'] = Time.new.to_s
+  response.cookies['rand'] = rand.to_s
 end
 
-
-server.POST '/post' do |res,req|
-    res.body = "dina params är #{req.params}"
+server.POST '/post' do |res, req|
+  res.body = "dina params är #{req.params}"
 end
 
 server.GET '/' do |res|
-    res.body = slim("out",locals: {key:"hej"})
+  res.body = slim('out', locals: { key: 'hej' })
 end
 
-server.start()
+server.start
