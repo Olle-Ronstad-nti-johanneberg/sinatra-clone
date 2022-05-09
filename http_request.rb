@@ -45,16 +45,23 @@ class HTTPRequest
   end
 
   def print
-    puts @protocol.light_blue
-    puts @type.light_blue
-    puts @path.light_blue
+    out = ''
+    out << @protocol.light_blue
+    out << "\n"
+    out << @type.light_blue
+    out << "\n"
+    out << @path.light_blue
+    out << "\n"
 
     @headers.each do |key, value|
-      puts "#{key}: #{value}".light_blue
+      out << "#{key}: #{value}".light_blue
+      out << "\n"
     end
-    puts ''
+    out << "\n"
     @params.each do |key, value|
-      puts "#{key} = #{value}".light_blue
+      out << "#{key} = #{value}".light_blue
+      out << "\n"
     end
+    out << "\n"
   end
 end

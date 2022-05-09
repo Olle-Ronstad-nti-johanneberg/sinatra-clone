@@ -39,16 +39,23 @@ class Olle_server
     puts "\nStarted server\n".green
     loop do
       socket = @server.accept
+      out_buffer = ''
+      Thread.new do
+        out_buffer << "\n\nThe socket is: #{socket.to_s.yellow}\n"
+        request, body = socket.get_http
 
-      # Thread.new do
-      puts "\n\nThe socket is: #{socket.to_s.yellow}"
-      request, body = socket.get_http
-      request = HTTPRequest.new(request, body)
-      request.print
-      send_response(socket, request)
-      puts "Closing socket: #{socket.to_s.yellow}"
-      socket.close
-      # end
+        if request == ''
+          out_buffer << 'server returned empty string'.red
+          next
+        end
+
+        request = HTTPRequest.new(request, body)
+        out_buffer << request.print
+        out_buffer << send_response(socket, request)
+        out_buffer << "Closing socket: #{socket.to_s.yellow}\n"
+        socket.close
+        puts out_buffer
+      end
     end
   end
 
@@ -57,6 +64,7 @@ class Olle_server
   # puts the hash wich contains the data to the terminal with colors
 
   def send_response(socket, request)
+    out = ''
     case request.type
     when 'GET'
       if !@get_routes[request.path].nil?
@@ -73,7 +81,7 @@ class Olle_server
         response = HTTPResponse.new('error', 404)
       end
 
-      response.print
+      out << response.print
       socket.puts response.to_s
     when 'POST'
       if !@post_routes[request.path].nil?
@@ -83,10 +91,11 @@ class Olle_server
         response = HTTPResponse.new('error', 404)
       end
 
-      response.print
+      out << response.print
       socket.puts response.to_s
     else
       socket.puts("HTTP/1.1 500\nServer: Olle_server")
     end
+    out
   end
 end

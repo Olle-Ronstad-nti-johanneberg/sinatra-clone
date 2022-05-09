@@ -27,6 +27,6 @@ class HTTPResponseImage
       "#{key}: #{value}"
     end.join("\r\n")
 
-    puts "#{@protocol} #{@status_code}\r\n#{header_str}\n\nimage".green
+    "#{@protocol} #{@status_code}\r\n#{header_str}\n\nimage\n".green
   end
 end

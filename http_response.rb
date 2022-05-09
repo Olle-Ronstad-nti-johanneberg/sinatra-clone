@@ -52,7 +52,7 @@ class HTTPResponse
   end
 
   def print
-    puts to_s.green
+    "#{to_s.green}\n"
   end
 
   private
