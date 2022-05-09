@@ -35,8 +35,11 @@ class HTTPResponse
     cookies_str = @cookies.to_a.map do |key, value|
       "Set-Cookie: #{key}=#{value}"
     end.join("\r\n")
-
-    "#{@protocol} #{@status_code}\r\n#{header_str}\r\n#{cookies_str}\n#{@body}"
+    if cookies_str == ''
+      "#{@protocol} #{@status_code}\r\n#{header_str}\r\n\r\n#{@body}"
+    else
+      "#{@protocol} #{@status_code}\r\n#{header_str}\r\n#{cookies_str}\r\n\r\n#{@body}"
+    end
   end
 
   def redirect(link)
